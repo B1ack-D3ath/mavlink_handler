@@ -1,7 +1,7 @@
 import logging
 import math 
 from typing import Optional, List, Dict, Union, Any
-from mavlink_handler.mavlink_handler_core import MAVLinkHandlerCore
+from .mavlink_handler_core import MAVLinkHandlerCore
 from pymavlink import mavutil
 
 class MAVLinkHandlerBase(MAVLinkHandlerCore):

@@ -1,7 +1,7 @@
 import logging
 import math
 from typing import Optional, Dict
-from mavlink_handler.mavlink_handler_base import MAVLinkHandlerBase
+from .mavlink_handler_base import MAVLinkHandlerBase
 from pymavlink import mavutil
 
 class MAVLinkHandlerCopter(MAVLinkHandlerBase):
