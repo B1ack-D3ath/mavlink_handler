@@ -284,6 +284,8 @@ class MAVLinkHandlerCore:
         self.logger.info(f"{_f_name}: MAVLink connection closed and resources cleaned up.")
 
     # --- Message Handling & Helpers ---
+    def is_ready(self) -> bool:
+        return self._is_ready()
     
     def _is_ready(self) -> bool:
         """Checks if the connection is active and target is known."""
