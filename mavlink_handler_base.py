@@ -21,10 +21,10 @@ class MAVLinkHandlerBase(MAVLinkHandlerCore):
     CMD_DO_CHANGE_SPEED = mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED
     CMD_NAV_RETURN_TO_LAUNCH = mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH # NEW
     
-    def __init__(self, mavlink_url: str = "udp:localhost:14550", source_system: int = 255, logger: Optional[logging.Logger] = None):
+    def __init__(self, mavlink_url: str = "udp:localhost:14550", baud: int = 57600, source_system: int = 255, logger: Optional[logging.Logger] = None):
         """Initializes the MAVLinkHandlerBase."""
         self.logger = logger if isinstance(logger, logging.Logger) else logging.getLogger(__name__)
-        super().__init__(mavlink_url, source_system, self.logger)
+        super().__init__(mavlink_url=mavlink_url, baud=baud, source_system=source_system, logger=logger)
         _f_name = self.__class__.__name__ + self.__init__.__name__
         self.logger.info(f"{_f_name}: Initializing MAVLinkHandlerBase...")
 

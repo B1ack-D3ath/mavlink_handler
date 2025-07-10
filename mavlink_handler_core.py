@@ -51,7 +51,7 @@ class MAVLinkHandlerCore:
     MAV_PARAM_TYPE_INT32 = mavutil.mavlink.MAV_PARAM_TYPE_INT32
 
 
-    def __init__(self, mavlink_url: str = "udp:localhost:14550", source_system: int = 255, logger: Optional[logging.Logger] = None):
+    def __init__(self, mavlink_url: str = "udp:localhost:14550", baud: int = 57600, source_system: int = 255, logger: Optional[logging.Logger] = None):
         """
         Initializes the MAVLink connection handler. Does not connect automatically.
         
@@ -62,6 +62,7 @@ class MAVLinkHandlerCore:
         """
         _f_name = self.__class__.__name__+ '.' + self.__init__.__name__
         self.mavlink_url = mavlink_url if isinstance(mavlink_url, str) else "udp:localhost:14550"
+        self.baud = baud if isinstance(baud, int) and baud > 0 else 57600
         self.source_system = source_system if isinstance(source_system, int) and (0 <= source_system <= 255) else 255
         self.logger = logger if isinstance(logger, logging.Logger) else logging.getLogger(__name__)
         self.conn = None
@@ -148,22 +149,29 @@ class MAVLinkHandlerCore:
         
         while not self.conn and retries < max_retries:
             try:
-                self.logger.info(f"{_f_name}: Attempting MAVLink connection to {self.mavlink_url}...")
-                
                 if self.conn:
                     try: self.conn.close()
                     except Exception: pass
                     self.conn = None
                 
-                self.conn = mavutil.mavlink_connection(self.mavlink_url, source_system=self.source_system)
+                if self.mavlink_url.startswith('/dev/') or self.mavlink_url.startswith('COM'):
+                    self.logger.info(f"Drona seri port üzerinden bağlanılıyor: {self.mavlink_url} @ {self.baud} baud")
+                    self.vehicle = mavutil.mavlink_connection(self.mavlink_url, baud=self.baud, source_system=self.source_system, autoreconnect=True)
+                
+                else:
+                    self.logger.info(f"Drona network üzerinden bağlanılıyor: {self.mavlink_url}")
+                    self.vehicle = mavutil.mavlink_connection(self.mavlink_url, source_system=self.source_system, autoreconnect=True)
+                
                 self.logger.info(f"{_f_name}: Waiting for first heartbeat...")
                 start_time = time.time()
                 msg = None
                 
                 while time.time() - start_time < 10: # 10 second timeout
                     msg = self.conn.recv_match(type='HEARTBEAT', blocking=True, timeout=1)
+                    
                     if msg and msg.get_srcSystem() != self.source_system: 
                         break
+                    
                     else:
                         msg = None
                 

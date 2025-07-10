@@ -54,11 +54,11 @@ class MAVLinkHandlerCopter(MAVLinkHandlerBase):
     COPTER_MODE_NAMES: Dict[int, str] = {v: k for k, v in COPTER_MODES.items()}
 
 
-    def __init__(self, mavlink_url: str = "udp:localhost:14550", source_system: int = 255, logger: Optional[logging.Logger] = None):
+    def __init__(self, mavlink_url: str = "udp:localhost:14550", baud: int = 57600, source_system: int = 255, logger: Optional[logging.Logger] = None):
         """Initializes the MAVLinkHandlerCopter."""
         
         self.logger = logger if isinstance(logger, logging.Logger) else logging.getLogger(__name__)
-        super().__init__(mavlink_url, source_system, logger)
+        super().__init__(mavlink_url=mavlink_url, baud=baud, source_system=source_system, logger=logger)
         _f_name = self.__class__.__name__ + self.__init__.__name__
         self.logger.info(f"{_f_name}: Initializing MAVLinkHandlerCopter...")
 
